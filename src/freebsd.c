@@ -24,7 +24,11 @@ static int bsd_open(int port, divert_cb cb)
 	s_in.sin_family = PF_INET;
 	s_in.sin_port   = htons(port);
 
+#ifdef PF_DIVERT
+	if ((_s = socket(PF_DIVERT, SOCK_RAW, 0)) == -1)
+#else
 	if ((_s = socket(PF_INET, SOCK_RAW, IPPROTO_DIVERT)) == -1)
+#endif
 		err(1, "socket()");
 
 	if (bind(_s, (struct sockaddr*) &s_in, sizeof(s_in)) == -1)
